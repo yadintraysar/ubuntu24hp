@@ -1,0 +1,62 @@
+{
+    "57942132": {
+        "input": {
+            "fusion": {
+                "type": "LOCAL_NETWORK",
+                "configuration": {
+                    "ip": "192.168.1.254",
+                    "port": 30000
+                }
+            }
+        },
+        "world": {
+            "translation": [0, 0, 0],
+            "rotation": [0, 0, 0]
+        }
+    },
+    "59919470": {
+        "input": {
+            "fusion": {
+                "type": "LOCAL_NETWORK",
+                "configuration": {
+                    "ip": "192.168.1.254",
+                    "port": 30002
+                }
+            }
+        },
+        "world": {
+            "translation": [2, 0, 0],
+            "rotation": [0, 1.5708, 0]
+        }
+    },
+    "51553791": {
+        "input": {
+            "fusion": {
+                "type": "LOCAL_NETWORK",
+                "configuration": {
+                    "ip": "192.168.1.254",
+                    "port": 30004
+                }
+            }
+        },
+        "world": {
+            "translation": [0, 0, 2],
+            "rotation": [0, 3.14159, 0]
+        }
+    },
+    "58852404": {
+        "input": {
+            "fusion": {
+                "type": "LOCAL_NETWORK",
+                "configuration": {
+                    "ip": "192.168.1.254",
+                    "port": 30006
+                }
+            }
+        },
+        "world": {
+            "translation": [-2, 0, 0],
+            "rotation": [0, -1.5708, 0]
+        }
+    }
+}

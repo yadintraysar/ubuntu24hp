@@ -147,3 +147,5 @@ if __name__ == "__main__":
 cd "/usr/local/zed/samples/camera streaming/single_sender/python"
 python3 streaming_sender.py
 python3 streaming_sender.py
+
+m 

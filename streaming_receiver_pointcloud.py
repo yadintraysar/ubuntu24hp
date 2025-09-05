@@ -102,30 +102,18 @@ def main() -> int:
                 time.sleep(0.005)
                 continue
 
-            # Retrieve XYZRGBA point cloud in meters
+            # Retrieve XYZRGBA point cloud with embedded RGB colors (official SDK way)
             cam.retrieve_measure(pc_mat, sl.MEASURE.XYZRGBA)
-            xyzrgba = pc_mat.get_data()  # shape (H, W, 4), float32
+            xyzrgba = pc_mat.get_data()  # shape (H, W, 4), float32 - XYZ + packed RGBA
 
-            # Retrieve color from LEFT image for better visualization
-            cam.retrieve_image(color_mat, sl.VIEW.LEFT)
-            color_img = color_mat.get_data()  # HxWx3 uint8 BGR
-
-            # Downsample spatially by stride to keep FPS reasonable
-            # Align color resolution to point cloud resolution before any stride
-            # Align color to point cloud resolution
-            Hpc, Wpc, _ = xyzrgba.shape
-            if color_img is not None and color_img.size != 0:
-                color_match = cv2.resize(color_img, (Wpc, Hpc), interpolation=cv2.INTER_AREA)
-            else:
-                color_match = None
-
-            # Downsample
+            # Downsample XYZRGBA data
             xyzrgba_ds = xyzrgba[::stride, ::stride, :]
-            Hs, Ws, _ = xyzrgba_ds.shape
-            pts = xyzrgba_ds.reshape(-1, 4)
+            pts = xyzrgba_ds.reshape(-1, 4)  # Flatten to Nx4 array
 
-            # Build mask: finite, positive range, within max_range
-            xs, ys, zs, _a = pts.T
+            # Extract XYZ and RGBA channels
+            xs, ys, zs, rgba_packed = pts.T
+
+            # Build mask for valid points
             finite = np.isfinite(xs) & np.isfinite(ys) & np.isfinite(zs)
             positive = zs > 0.0
             near = zs < max_range
@@ -133,37 +121,25 @@ def main() -> int:
 
             pts3d = np.stack([xs[mask], ys[mask], zs[mask]], axis=1)
 
-            # Get colors for valid points
-            if color_match is not None and color_match.size != 0:
-                # Downsample color to match point cloud stride
-                color_ds = color_match[::stride, ::stride, :]
-                color_bgr = color_ds.reshape(-1, 3)
-                # Convert BGR->RGB and to [0,1] 
-                colors_full = color_bgr[:, ::-1].astype(np.float32) / 255.0
-                # Only keep colors for valid points
-                if colors_full.shape[0] == mask.shape[0]:
-                    colors = colors_full[mask]
-                else:
-                    colors = None
-            else:
-                colors = None
+            # Extract real RGB colors from the RGBA channel (official SDK way)
+            rgba_valid = rgba_packed[mask]
+            colors = np.zeros((len(rgba_valid), 3), dtype=np.float32)
+            
+            for i, rgba in enumerate(rgba_valid):
+                if np.isfinite(rgba) and rgba != 0:
+                    # Unpack RGBA from float32 (SDK packs RGBA into single float)
+                    rgba_int = int(rgba) if np.isfinite(rgba) else 0
+                    b = (rgba_int >> 24) & 0xFF
+                    g = (rgba_int >> 16) & 0xFF  
+                    r = (rgba_int >> 8) & 0xFF
+                    # Convert to RGB [0,1] range
+                    colors[i] = [r/255.0, g/255.0, b/255.0]
 
-            # Update Open3D geometry with filtering
+            # Update Open3D geometry with real RGB colors
             pcd.points = o3d.utility.Vector3dVector(pts3d)
+            pcd.colors = o3d.utility.Vector3dVector(colors)
             
-            if colors is not None and colors.shape[0] == pts3d.shape[0]:
-                pcd.colors = o3d.utility.Vector3dVector(colors)
-            else:
-                # fallback: depth-based color
-                if pts3d.shape[0] > 0:
-                    z_norm = (pts3d[:, 2] / max_range).clip(0.0, 1.0)
-                    # Use a better color scheme - blue to red based on distance
-                    colors_fallback = np.zeros((pts3d.shape[0], 3))
-                    colors_fallback[:, 0] = z_norm  # Red increases with distance
-                    colors_fallback[:, 2] = 1.0 - z_norm  # Blue decreases with distance
-                    pcd.colors = o3d.utility.Vector3dVector(colors_fallback)
-            
-            # Apply noise filtering
+            # Apply noise filtering for cleaner visualization
             if len(pcd.points) > 100:
                 # Remove statistical outliers
                 pcd, _ = pcd.remove_statistical_outlier(nb_neighbors=20, std_ratio=2.0)

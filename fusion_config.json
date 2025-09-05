@@ -1,0 +1,70 @@
+{
+    "57942132": {
+        "input": {
+            "zed": {
+                "type": "STREAM",
+                "configuration": "192.168.1.254:30000"
+            },
+            "fusion": {
+                "type": "INTRA_PROCESS"
+            }
+        },
+        "world": {
+            "translation": [0, 0, 0],
+            "rotation": [0, 0, 0]
+        }
+    },
+    "59919470": {
+        "input": {
+            "zed": {
+                "type": "STREAM", 
+                "configuration": "192.168.1.254:30002"
+            },
+            "fusion": {
+                "type": "INTRA_PROCESS"
+            }
+        },
+        "world": {
+            "translation": [2, 0, 0],
+            "rotation": [0, 1.5708, 0]
+        }
+    },
+    "51553791": {
+        "input": {
+            "zed": {
+                "type": "STREAM",
+                "configuration": "192.168.1.254:30004"  
+            },
+            "fusion": {
+                "type": "LOCAL_NETWORK",
+                "configuration": {
+                    "ip": "192.168.1.254",
+                    "port": 30004
+                }
+            }
+        },
+        "world": {
+            "translation": [0, 0, 2],
+            "rotation": [0, 3.14159, 0]
+        }
+    },
+    "58852404": {
+        "input": {
+            "zed": {
+                "type": "STREAM",
+                "configuration": "192.168.1.254:30006"
+            },
+            "fusion": {
+                "type": "LOCAL_NETWORK", 
+                "configuration": {
+                    "ip": "192.168.1.254",
+                    "port": 30006
+                }
+            }
+        },
+        "world": {
+            "translation": [-2, 0, 0],
+            "rotation": [0, -1.5708, 0]
+        }
+    }
+}
