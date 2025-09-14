@@ -1,0 +1,8 @@
+ssh -o StrictHostKeyChecking=no nvidia@10.0.0.31 "cd '/usr/local/zed/samples/camera streaming/multi_sender/python' && nohup python3 streaming_senders.py > /tmp/streaming.log 2>&1 & echo 'Started streaming, PID:' \$!"
+
+# Option 1: Original 4-camera combined receiver
+source ~/miniforge3/etc/profile.d/conda.sh && conda activate pacman && python3 streaming_receiver_4cameras_combined.py --jetson_ip 10.0.0.31
+
+# Option 2: Mixed setup - Camera 1 separate, Cameras 2-4 combined
+./run_mixed_camera_setup.sh 10.0.0.31
+
