@@ -1,0 +1,15 @@
+in SDKstream run
+
+4 camera setup
+./run_mixed_camera_setup_with_1.sh 10.0.0.31
+
+depth camera
+source ~/miniforge3/etc/profile.d/conda.sh && conda activate pacman && python3 streaming_receiver_depth.py --ip_address 10.0.0.31:30002
+
+audio
+ll
+
+gst-launch-1.0 -v alsasrc device=hw:1,0 do-timestamp=true ! audio/x-raw,format=S16LE,channels=1,rate=48000 ! audioconvert ! audioresample ! opusenc bitrate=64000 ! rtpopuspay pt=96 ! udpsink host=10.0.0.32 port=5005gst-launch-1.0 -v alsasrc device=hw:1,0 do-timestamp=true ! audio/x-raw,format=S16LE,channels=1,rate=48000 ! audioconvert ! audioresample ! opusenc bitrate=64000 ! rtpopuspay pt=96 ! udpsink host=10.0.0.32 port=5005 do-timestamp=true ! audio/x-raw,format=S16LE,channels=1,rate=48000 ! audioconvert ! audioresample ! opusenc bitrate=64000 ! rtpopuspay pt=96 ! udpsink host=10.0.0.32 port=5005
+
+
+map
