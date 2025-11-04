@@ -1,0 +1,8 @@
+audio: 
+gst-launch-1.0 -v udpsrc port=5005 caps="application/x-rtp,media=audio,clock-rate=48000,encoding-name=OPUS,payload=96" ! rtpopusdepay ! opusdec ! audioconvert ! audioresample ! alsasink
+
+cameras:
+./run_mixed_camera_setup.sh 10.0.0.31
+
+3D: 
+source ~/miniforge3/etc/profile.d/conda.sh && conda activate pacman && python3 streaming_receiver_depth.py --ip_address 10.0.0.31:30002

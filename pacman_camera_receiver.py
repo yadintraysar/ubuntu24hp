@@ -47,7 +47,7 @@ def main():
 
     # Create OpenCV window
     window_name = "Pacman Camera Feed"
-    cv2.namedWindow(window_name, cv2.WINDOW_AUTOSIZE)
+    cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
     
     # Create Mat object to store images
     image = sl.Mat()

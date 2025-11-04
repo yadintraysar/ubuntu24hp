@@ -143,24 +143,27 @@ class ThreeCameraDisplay:
         last_fps_time = time.time()
         fps_counters = [0] * 3  # Only 3 cameras now
         
-        # Create placeholder images
-        placeholder = np.zeros((240, 480, 3), dtype=np.uint8)
-        cv2.putText(placeholder, "Connecting...", (150, 120), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255), 2)
+        # Create placeholder images with standard size
+        standard_height = 480
+        standard_width = 640
+        placeholder = np.zeros((standard_height, standard_width, 3), dtype=np.uint8)
+        cv2.putText(placeholder, "No Signal", (200, standard_height//2), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 1.0, (128, 128, 128), 2)
         
         images = [placeholder.copy() for _ in range(3)]  # Only 3 cameras
         
         while self.running:
             current_time = time.time()
             
-            # Get latest frames from each camera
+            # Get latest frames from each camera and resize to standard size
             for i in range(3):
                 try:
                     frame_data = self.image_queues[i].get_nowait()
-                    images[i] = frame_data['image']
+                    # Resize to standard size for consistent stacking
+                    images[i] = cv2.resize(frame_data['image'], (standard_width, standard_height))
                     fps_counters[i] += 1
                 except queue.Empty:
-                    pass  # Keep previous image
+                    pass  # Keep previous image (placeholder or last frame)
             
             # Create layout: Camera 2 | Camera 3 on top, Camera 4 centered below
             top_row = np.hstack([images[0], images[1]])      # Camera 2 | Camera 3

@@ -1,0 +1,30 @@
+# Brokk Bridge Configuration File
+# TCP-to-RS485 Bridge for Brokk Machine Control via PUSR USR-TCP232-410s
+
+# PUSR Device Network Settings
+# Update 'host' to match your PUSR device's IP address
+host: "10.0.0.135"
+port: 4000  # TCP Server port from PUSR config (Socket A)
+
+# RS485 Serial Port Settings
+# Common device paths:
+#   - /dev/ttyTHS3  (Jetson onboard UART)
+#   - /dev/ttyUSB0  (USB-to-RS485 adapter)
+serial_device: "/dev/ttyTHS3"
+
+# Serial Parameters (must match PUSR configuration)
+# PUSR Config: 19200 baud, 8 data bits, No parity, 1 stop bit
+baud: 19200
+data_bits: 8          # 5, 6, 7, or 8
+parity: "none"        # none, even, odd, mark, space
+stop_bits: 1          # 1, 1.5, or 2
+
+# Logging Configuration
+log_level: "INFO"     # DEBUG, INFO, WARNING, ERROR
+log_hex: false        # Set to true to enable hex dump of all data (debugging)
+
+# Notes:
+# - The bridge automatically reconnects if the TCP connection drops
+# - All serial data is forwarded bidirectionally without modification
+# - Use DEBUG log level and log_hex: true for protocol analysis
+
